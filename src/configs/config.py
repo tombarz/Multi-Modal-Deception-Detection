@@ -1,8 +1,10 @@
 import torch
+from pathlib import Path
 class Config:
     # General settings
-    DATA_DIR = '../data/trial_data'
-    MODEL_SAVE_DIR = '../models/'
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    DATA_DIR = BASE_DIR / 'data' / 'trial_data' / 'video'
+    MODEL_SAVE_DIR = BASE_DIR / 'models'
     DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     # Sequence length

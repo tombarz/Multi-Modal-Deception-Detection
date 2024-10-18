@@ -1,3 +1,5 @@
+# src/train.py
+
 import os
 import numpy as np
 import torch
@@ -11,37 +13,31 @@ import torch.nn as nn
 
 def load_data():
     data_list = []
+    labels = []
 
-    # Assuming you have labels and paths to each modality's data
-    for sample in dataset_samples:
-        sample_data = {}
-        label = sample['label']  # 0 or 1
+    # Paths to data directories
+    deceptive_dir = 'C:/Users/TomBa/OneDrive/desktop/startUps/Veritas/code/Multi-Modal-Deception-Detection/data/trial_data/video/Deceptive'
+    truthful_dir = 'C:/Users/TomBa/OneDrive/desktop/startUps/Veritas/code/Multi-Modal-Deception-Detection/data/trial_data/video/Truthful'
 
-        # Process video
-        if Config.USE_VIDEO:
-            video_path = sample['video_path']
-            video_sequence = process_video(video_path)  # Shape: (seq_len, video_feature_dim)
-            if video_sequence is None:
-                continue  # Skip samples with no faces detected
-            sample_data['video'] = video_sequence
+    # Process deceptive videos
+    for video_name in os.listdir(deceptive_dir):
+        video_path = os.path.join(deceptive_dir, video_name)
+        video_sequence = process_video(video_path)
+        if video_sequence is None:
+            continue  # Skip if processing failed
+        sample_data = {'video': video_sequence, 'label': 1}
+        data_list.append(sample_data)
 
-        # # Process audio
-        # if Config.USE_AUDIO:
-        #     audio_path = sample['audio_path']
-        #     audio_features = extract_audio_features(audio_path)  # Shape: (seq_len, audio_feature_dim)
-        #     sample_data['audio'] = audio_features
-
-        # # Process text
-        # if Config.USE_TEXT:
-        #     text = sample['text']  # The transcript
-        #     text_features = extract_text_features(text)  # Shape: (seq_len, text_feature_dim)
-        #     sample_data['text'] = text_features
-
-        sample_data['label'] = label
+    # Process truthful videos
+    for video_name in os.listdir(truthful_dir):
+        video_path = os.path.join(truthful_dir, video_name)
+        video_sequence = process_video(video_path)
+        if video_sequence is None:
+            continue  # Skip if processing failed
+        sample_data = {'video': video_sequence, 'label': 0}
         data_list.append(sample_data)
 
     return data_list
-
 
 def train_model():
     data_list = load_data()
@@ -66,7 +62,7 @@ def train_model():
         model.train()
         running_loss = 0.0
         for features, labels in train_loader:
-            features = features.to(Config.DEVICE)  # Shape: (batch_size, seq_len, total_feature_dim)
+            features = features.to(Config.DEVICE)  # Shape: (batch_size, seq_len, total_input_size)
             labels = labels.to(Config.DEVICE)
 
             optimizer.zero_grad()
@@ -96,4 +92,8 @@ def train_model():
         print(f'Test Accuracy: {accuracy:.2f}%')
 
     # Save the trained model
+    os.makedirs(Config.MODEL_SAVE_DIR, exist_ok=True)
     torch.save(model.state_dict(), os.path.join(Config.MODEL_SAVE_DIR, 'multimodal_model.pth'))
+
+if __name__ == '__main__':
+    train_model()
