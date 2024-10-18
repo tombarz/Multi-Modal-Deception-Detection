@@ -1,3 +1,13 @@
+import os
+import numpy as np
+import torch
+from torch.utils.data import DataLoader
+from sklearn.model_selection import train_test_split
+from configs.config import Config
+from processing.video_processing import process_video
+from datasets.multimodal_dataset import MultimodalDataset
+from models.multimodal_model import MultimodalLSTMModel
+import torch.nn as nn
 
 def load_data():
     data_list = []
@@ -15,17 +25,17 @@ def load_data():
                 continue  # Skip samples with no faces detected
             sample_data['video'] = video_sequence
 
-        # Process audio
-        if Config.USE_AUDIO:
-            audio_path = sample['audio_path']
-            audio_features = extract_audio_features(audio_path)  # Shape: (seq_len, audio_feature_dim)
-            sample_data['audio'] = audio_features
+        # # Process audio
+        # if Config.USE_AUDIO:
+        #     audio_path = sample['audio_path']
+        #     audio_features = extract_audio_features(audio_path)  # Shape: (seq_len, audio_feature_dim)
+        #     sample_data['audio'] = audio_features
 
-        # Process text
-        if Config.USE_TEXT:
-            text = sample['text']  # The transcript
-            text_features = extract_text_features(text)  # Shape: (seq_len, text_feature_dim)
-            sample_data['text'] = text_features
+        # # Process text
+        # if Config.USE_TEXT:
+        #     text = sample['text']  # The transcript
+        #     text_features = extract_text_features(text)  # Shape: (seq_len, text_feature_dim)
+        #     sample_data['text'] = text_features
 
         sample_data['label'] = label
         data_list.append(sample_data)

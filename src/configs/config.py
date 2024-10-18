@@ -1,5 +1,4 @@
-
-
+import torch
 class Config:
     # General settings
     DATA_DIR = '../data/trial_data'
@@ -11,21 +10,16 @@ class Config:
 
     # Video settings
     USE_VIDEO = True
-    VIDEO_FEATURE_DIM = 136  # Adjust if necessary
+    VIDEO_FEATURE_DIM = 136  # 68 landmarks * 2 coordinates
+    VIDEO_MAX_LEN = SEQ_LEN
 
-    # Audio settings
+    # Disable audio and text modalities
     USE_AUDIO = False
-    AUDIO_N_MFCC = 40  # Number of MFCC coefficients
-    AUDIO_FEATURE_DIM = AUDIO_N_MFCC
-
-    # Text settings
     USE_TEXT = False
-    TEXT_MAX_LEN = 100  # Max token length
-    TEXT_FEATURE_DIM = 768  # BERT base hidden size
 
     # Model settings
     HIDDEN_SIZE = 128
-    NUM_LAYERS = 2
+    NUM_LAYERS = 3
     DROPOUT_RATE = 0.5
 
     # Training settings

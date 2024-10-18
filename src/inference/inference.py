@@ -1,7 +1,8 @@
-# src/inference/inference.py
+import torch
+import numpy as np
 from configs.config import Config
-from preprocessing.video_preprocessing import process_video
-from src.models.multi
+from processing.video_processing import process_video
+from models.multimodal_model import MultimodalLSTMModel
 
 def multimodal_inference(input_paths):
     features = []
@@ -15,15 +16,15 @@ def multimodal_inference(input_paths):
         features.append(video_sequence)
 
     # Audio
-    if Config.USE_AUDIO:
-        audio_features = extract_audio_features(input_paths['audio'])
-        features.append(audio_features)
+    # if Config.USE_AUDIO:
+    #     audio_features = extract_audio_features(input_paths['audio'])
+    #     features.append(audio_features)
 
     # Text
-    if Config.USE_TEXT:
-        text = input_paths['text']
-        text_features = extract_text_features(text)
-        features.append(text_features)
+    # if Config.USE_TEXT:
+    #     text = input_paths['text']
+    #     text_features = extract_text_features(text)
+    #     features.append(text_features)
 
     # Ensure all features have the same sequence length
     for i in range(len(features)):
