@@ -16,34 +16,39 @@ def load_data():
     labels = []
 
     # Paths to data directories
-    deceptive_dir = 'C:/Users/TomBa/OneDrive/desktop/startUps/Veritas/code/Multi-Modal-Deception-Detection/data/trial_data/video/Deceptive'
-    truthful_dir = 'C:/Users/TomBa/OneDrive/desktop/startUps/Veritas/code/Multi-Modal-Deception-Detection/data/trial_data/video/Truthful'
+    deceptive_dir = 'C:/Users/TomBa/OneDrive/desktop/startUps/Veritas/code/Multi-Modal-Deception-Detection/src/preprocessed_data/Deceptive'
+    truthful_dir = 'C:/Users/TomBa/OneDrive/desktop/startUps/Veritas/code/Multi-Modal-Deception-Detection/src/preprocessed_data/Truthful'
 
     # Process deceptive videos
-    for video_name in os.listdir(deceptive_dir):
-        video_path = os.path.join(deceptive_dir, video_name)
-        video_sequence = process_video(video_path)
-        if video_sequence is None:
-            continue  # Skip if processing failed
-        sample_data = {'video': video_sequence, 'label': 1}
+    for file_name in os.listdir(deceptive_dir):
+        file_path = os.path.join(deceptive_dir, file_name)
+        sequence = np.load(file_path)
+        sample_data = {'video': sequence, 'label': 1}
         data_list.append(sample_data)
 
     # Process truthful videos
-    for video_name in os.listdir(truthful_dir):
-        video_path = os.path.join(truthful_dir, video_name)
-        video_sequence = process_video(video_path)
-        if video_sequence is None:
+    for file_name in os.listdir(truthful_dir):
+        file_path = os.path.join(truthful_dir, file_name)
+        sequence = np.load(file_path)
+        if sequence is None:
             continue  # Skip if processing failed
-        sample_data = {'video': video_sequence, 'label': 0}
+        sample_data = {'video': sequence, 'label': 0}
         data_list.append(sample_data)
 
     return data_list
 
 def train_model():
     data_list = load_data()
-    # Split data into training and testing
-    train_data_list, test_data_list = train_test_split(data_list, test_size=0.2, random_state=42)
+    # Extract labels for stratification
+    labels = [sample['label'] for sample in data_list]
 
+    # Split data into training and testing with stratification
+    train_data_list, test_data_list = train_test_split(
+        data_list,
+        test_size=0.2,
+        random_state=42,
+        stratify=labels
+    )
     # Create datasets and dataloaders
     train_dataset = MultimodalDataset(train_data_list)
     test_dataset = MultimodalDataset(test_data_list)
