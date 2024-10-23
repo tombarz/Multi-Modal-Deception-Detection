@@ -15,9 +15,14 @@ class Config:
     VIDEO_FEATURE_DIM = 136  # 68 landmarks * 2 coordinates
     VIDEO_MAX_LEN = SEQ_LEN
 
-    # Disable audio and text modalities
+    # Audio settings
     USE_AUDIO = False
-    USE_TEXT = False
+
+    # Text settings
+    USE_TEXT = True
+    LANGUAGE_MODEL_NAME = 'bert-base-multilingual-cased'  # Change this to the desired model
+    TEXT_FEATURE_DIM = 768  # Adjust based on the model's hidden size
+    TEXT_MAX_LEN = 128  # Maximum number of tokens
 
     # Model settings
     HIDDEN_SIZE = 128

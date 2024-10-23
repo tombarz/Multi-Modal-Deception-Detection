@@ -5,7 +5,7 @@ import numpy as np
 
 class MultimodalDataset(Dataset):
     def __init__(self, data_list):
-        self.data_list = data_list  # List of dictionaries with 'video', 'audio', 'text', 'label'
+        self.data_list = data_list  # List of dictionaries with 'video', 'text', and 'label'
 
     def __len__(self):
         return len(self.data_list)
@@ -16,7 +16,7 @@ class MultimodalDataset(Dataset):
 
         # Video features
         if Config.USE_VIDEO:
-            video_feat = sample['video']  # Shape: (seq_len, video_feature_dim)
+            video_feat = sample['video']  # Shape: (SEQ_LEN, VIDEO_FEATURE_DIM)
             features.append(video_feat)
 
         # Audio features
@@ -26,8 +26,10 @@ class MultimodalDataset(Dataset):
 
         # Text features
         if Config.USE_TEXT:
-            text_feat = sample['text']  # Shape: (seq_len, text_feature_dim)
-            features.append(text_feat)
+            text_feat = sample['text']  # Shape: (TEXT_FEATURE_DIM,)
+            # Repeat text features along the sequence length to match video sequence
+            text_feat_repeated = np.tile(text_feat, (Config.SEQ_LEN, 1))  # Shape: (SEQ_LEN, TEXT_FEATURE_DIM)
+            features.append(text_feat_repeated)
 
         # Concatenate features along the feature dimension
         # First, ensure all modalities have the same sequence length
@@ -40,7 +42,7 @@ class MultimodalDataset(Dataset):
             else:
                 features[i] = features[i][:seq_len]
 
-        concatenated_features = np.concatenate(features, axis=1)  # Shape: (seq_len, total_feature_dim)
+        concatenated_features = np.concatenate(features, axis=1)  # Shape: (SEQ_LEN, total_feature_dim)
         concatenated_features = torch.tensor(concatenated_features, dtype=torch.float32)
 
         label = torch.tensor(sample['label'], dtype=torch.long)
