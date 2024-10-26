@@ -28,3 +28,12 @@ class Config:
     NUM_EPOCHS = 30
     BATCH_SIZE = 16
     LEARNING_RATE = 0.0001
+
+    # Audio settings
+    USE_AUDIO = True
+    SAMPLE_RATE = 16000  # Sampling rate for audio files
+    N_MFCC = 13  # Number of MFCC coefficients
+    N_FFT = 512  # FFT window size
+    HOP_LENGTH = 160  # Hop length (in samples)
+    WIN_LENGTH = 400  # Window length (in samples)
+    AUDIO_FEATURE_DIM = N_MFCC  # Since we use N_MFCC coefficients

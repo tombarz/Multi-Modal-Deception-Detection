@@ -6,7 +6,6 @@ import torch
 from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
 from configs.config import Config
-from processing.video_processing import process_video
 from datasets.multimodal_dataset import MultimodalDataset
 from models.multimodal_model import MultimodalLSTMModel
 import torch.nn as nn

@@ -6,8 +6,7 @@ import numpy as np
 import sys
 import os
 
-# Adjust the import path if necessary
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
 from configs.config import Config
 
 # Initialize dlib's face detector and landmark predictor
@@ -71,3 +70,5 @@ def process_video(video_path, display=False):
     sequence = pad_or_truncate_sequence(landmarks_seq)
     sequence = np.array(sequence).reshape(Config.SEQ_LEN, -1)  # Shape: (SEQ_LEN, 136)
     return sequence
+
+
