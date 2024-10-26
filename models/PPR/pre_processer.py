@@ -15,4 +15,4 @@ def pre_proc(raw_footage: str):
 
 
 if __name__ == '__main__':
-    pre_proc("video1.mp4")
+    pre_proc("trial_lie_001.mp4")

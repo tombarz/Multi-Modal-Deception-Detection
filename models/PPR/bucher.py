@@ -1,9 +1,13 @@
 import json
 import subprocess
 import os
+import librosa
+from video_processing import process_video as facial_processor
+from configs.config import Config
 
 
 def create_subclips_from_json(video_file: str, json_file: str,output_folder = "Output"):
+
     # Load JSON data
     with open(json_file, 'r') as f:
         data = json.load(f)
@@ -11,8 +15,9 @@ def create_subclips_from_json(video_file: str, json_file: str,output_folder = "O
     video_name = os.path.splitext(video_file)[0]
 
     os.makedirs(output_folder, exist_ok=True)
-
+    json_data = {}
     for segment in data['segments']:
+
         start_time = segment['start']
         end_time = segment['end']
         segment_text = segment['text'].replace('\n', ' ')  # Flatten the text for file name
@@ -50,9 +55,27 @@ def create_subclips_from_json(video_file: str, json_file: str,output_folder = "O
 
         subprocess.run(video_cmd)
         subprocess.run(audio_cmd)
-
+        y, sr = librosa.load(audio_subclip_name, sr=Config.SAMPLE_RATE)
+        id = str(segment['id'])
+        json_data[str(segment['id'])] = {
+            "Whisper data": segment,
+            "Video path" : video_subclip_name,
+            "Audio data" : audio_subclip_name,
+            "Audio MFCCs" : librosa.feature.mfcc(
+            y=y,
+            sr=sr,
+            n_mfcc=Config.N_MFCC,
+            n_fft=Config.N_FFT,
+            hop_length=Config.HOP_LENGTH,
+            win_length=Config.WIN_LENGTH).tolist(),
+            "Facial Process" : facial_processor(video_subclip_name).tolist(),
+            "Lie Truth Indicator" : "TBD"
+        }
         print(f"Created video subclip: {video_subclip_name} [{start_time} to {end_time}] (video only)")
         print(f"Created audio subclip: {audio_subclip_name} [{start_time} to {end_time}] (audio only)")
+
+    with open(f'{output_folder}/{video_subclip_name.replace(".mp4","")}', 'w') as json_f:
+        json.dump(json_data, json_f, indent=4)
 
 
 def extract_audio_from_mp4(mp4_file: str, output_folder = "Output"):

@@ -1,7 +1,7 @@
 import os
 import numpy as np
 from configs.config import Config
-from processing.video_processing import process_video
+from models.PPR.video_processing import process_video
 
 def preprocess_videos():
     # Paths to raw data directories
